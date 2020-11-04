@@ -7,9 +7,15 @@ from .settings import SSHConnector
 
 
 class MainDeleter:
-    """MainDeleter serves to give utilible methods to help delete process."""
+    """MainDeleter serves to give utilible methods
+    to help delete process, namely:
+    - '_delete_old_iter': deletes files using passed values using cycle,
+    - '_delete_old': deletes file passed in param,
+    - '_get_errors': returns gotten errors happened during files deleting.
+    
+    """
 
-    def _delete_old_iter(self, values: typing.List[str]) -> typing.Union[list, None]:
+    def _delete_old_iter(self, values: typing.List[str, ...]) -> typing.Union[list, None]:
         """Deletes files passed in the list using cycle."""
 
         errors = []
@@ -19,7 +25,7 @@ class MainDeleter:
                 errors.append({value: stderr.read().decode()})
         return errors
 
-    def _delete_old(self, value: typing.Union[str, None]) -> typing.Union[list, None]:
+    def _delete_old(self, value: typing.Union[str, None]) -> typing.Union[typing.List[str, ...], None]:
         """Deletes file passed in value."""
 
         errors = []
@@ -30,16 +36,19 @@ class MainDeleter:
         return errors
 
     @staticmethod
-    def _get_errors(result: typing.Union[typing.List, None]) -> None:
+    def _get_errors(result: typing.Union[typing.List[str, ...], None]) -> None:
         if result:
             for error in result:
                 sys.stdout.write(error)
 
 
 class Deleter(MainDeleter):
-    """Deleter class serves to delete all the old files written in params"""
+    """Deleter class serves the abstract method above 'MainDeleter'.
+    Uses 'delete_old' method to communicate with util methods in super class.
 
-    def delete_old(self, values: typing.Union[typing.List[str], str]):
+    """
+
+    def delete_old(self, values: typing.Union[typing.List[str, ...], str]):
         """Deletes all the old files passed to delete in param"""
 
         if isinstance(values, list):
@@ -50,8 +59,13 @@ class Deleter(MainDeleter):
 
 
 class MainUpdater(Deleter):
+    """Class setves to give some additional methods like:
+    - '_update_iter': updates files passed in 'value' param using cycle,
+    - '_update_single': updates file passed in 'value' param,
 
-    def _update_iter(self, values: list) -> bool:
+    """
+
+    def _update_iter(self, values: typing.List[str, ...]) -> bool:
         """Updates all the files passed in 'values' list."""
 
         for value in values:
@@ -84,12 +98,25 @@ class MainUpdater(Deleter):
 
 
 class Updater(MainUpdater):
+    """Main class to use updation system
+    allows user to update data.
+
+    """
 
     def __init__(self, ssh_client: paramiko.SSHClient):
 
         self.SSH = ssh_client
 
-    def update_files(self, from_path: str, to_path: str, value: typing.Union[list, str]) -> bool:
+    def update_files(self, from_path: str, to_path: str, value: typing.Union[typing.List[str, ...], str]) -> bool:
+        """Updates files using passed params:
+        - 'from_path' used to get files from the equal directory
+          for the futher updating
+        - 'to_path' used to get path where to save new files
+        - 'value' contains values important to update
+          can be both 'str' and 'list' with str objects in it.
+
+        """
+        
         self.destdel_path = to_path
         self.delete_old(value)
         self.files_path = from_path

@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 
 class ABCAnalizer(ABC):
-    """abc for main Analizer class,
+    """ABC for main Analizer class,
     releases passed beneath methods.
 
     """

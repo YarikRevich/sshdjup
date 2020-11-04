@@ -22,6 +22,11 @@ __all__ = ["Analizer"]
 
 
 class MainAnalizer:
+    """Main class for config file analizing
+    it serves to get origin data, parce them
+    and filter them afterwards.
+
+    """
 
     available_params: tuple = (
         "HOST",
@@ -43,9 +48,14 @@ class MainAnalizer:
     processed_data: dict = {}
 
     def _check_file_existing(self) -> bool:
+        """Checks whether main config file 
+        'SSHFile' exists.
+
+        """
+
         return os.path.exists("SSHFile")
 
-    def _get_origin_data(self) -> typing.List[str]:
+    def _get_origin_data(self) -> typing.List[str, ...]:
         """Gets original data from 'SSHFile'."""
 
         with open("SSHFile") as file:
@@ -53,7 +63,7 @@ class MainAnalizer:
             del data[-1]
             return data
 
-    def _get_processed_line(self, line: str) -> typing.Tuple[str]:
+    def _get_processed_line(self, line: str) -> typing.Tuple[str, ...]:
         """Processes gotten text and returns tuple with two strings: param, value."""
     
         param, value = line.split("=")
@@ -62,7 +72,7 @@ class MainAnalizer:
         return (param.upper(), value)
 
 
-    def _process_data(self, origin_data: typing.List[str]) -> typing.Dict[str, typing.Union[str, int]]:
+    def _process_data(self, origin_data: typing.List[str, ...]) -> typing.Dict[str, typing.Union[str, int]]:
         """Processes origin data gotten from 'SSHFile'
         and returns made dictionary.
 
@@ -75,6 +85,10 @@ class MainAnalizer:
         return self.processed_data
 
     def _parce_ssh_data(self) -> typing.NamedTuple:
+        """Filters processed data and returns main
+        credentials to connect via ssh.
+
+        """
         
         ssh_data = namedtuple("SSHdata", ["host", "username", "port", "password"])
         return ssh_data(
@@ -85,6 +99,11 @@ class MainAnalizer:
         )
 
     def _analize_data(self) -> typing.Dict:
+        """Main analizing method.
+        Firstly checks whether config file exists,
+        then, gets origin data and processes it.
+
+        """
 
         if self._check_file_existing():
             origin_data = self._get_origin_data()
@@ -94,12 +113,24 @@ class MainAnalizer:
 
 
 class Analizer(MainAnalizer, ABCAnalizer):
+    """Class imitates MainAnalizer.
+    This property accepts to use main tools
+    for the analization of the main config file.
+
+    """
+
 
     def __init__(self):
 
         self.analized_data = self._analize_data()
 
     def _check_path_availability(self, method):
+        """Runs method passed in the param and 
+        that checks whether wanted path is written
+        in the 'SSHFile'.
+
+        """
+
         return getattr(self, method)()
 
     def get_ssh_data(self):

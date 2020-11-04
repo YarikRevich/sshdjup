@@ -4,6 +4,8 @@ from .extensions import Commands
 
 
 def start_updating():
+    """Starts main exutable process of updating files."""
+
     analizer = Analizer()
     ssh_data = analizer.get_ssh_data()
     ssh_client = start_ssh_connection(
